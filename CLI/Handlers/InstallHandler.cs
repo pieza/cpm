@@ -1,6 +1,4 @@
-﻿using cpm.Services;
-using cpm.Utils;
-using System.IO;
+﻿using cpm.Utils;
 
 namespace cpm.CLI.Handlers
 {
@@ -9,7 +7,6 @@ namespace cpm.CLI.Handlers
         public int Handle(InstallVerb opts)
         {
             string version = !string.IsNullOrEmpty(opts.PackageVersion) ? opts.PackageVersion : "latest";
-            Logger.Instance.Info($"Installing package {opts.PackageIdentifier} on version {version}...");
             var includeYaml = new IncludeYaml();
 
             if (!includeYaml.Exists)
@@ -42,15 +39,16 @@ namespace cpm.CLI.Handlers
                 {
                     InstallPackage(item.Key, item.Value).Wait();
                 }
+                Logger.Instance.Info($"All {dependencies.Count} dependencies installed succesfully!");
             }
 
-
-            Logger.Instance.Info($"Package '{opts.PackageIdentifier}' installed successfully!");
             return 0;
         }
 
         private async Task<string?> InstallPackage(string identifier, string version)
         {
+
+            Logger.Instance.Info($"Installing package {identifier} on version {version}...");
             string currentDirectory = Directory.GetCurrentDirectory();
             string includePath = Path.Combine(currentDirectory, ".include");
 
@@ -65,8 +63,13 @@ namespace cpm.CLI.Handlers
                 return null;
             }
 
-            Logger.Instance.Info($"Installing package {identifier} {version} ...");
-            string? cachePath = Cache.GetPackagePath(identifier, version);
+            string? cachePath = null;
+
+            if (version != "latest")
+            {
+                Logger.Instance.Info($"Cheking for package {identifier} {version} on cache ...");
+                cachePath = Cache.GetPackagePath(identifier, version);
+            }
 
             if (string.IsNullOrEmpty(cachePath))
             {
@@ -82,24 +85,8 @@ namespace cpm.CLI.Handlers
                 cachePath = downloadedPackage.Path;
             }
 
-            string[] files = Directory.GetFileSystemEntries(cachePath, "*", SearchOption.AllDirectories);
+            Cache.Copy(cachePath, targetPath);
 
-            foreach (string path in files)
-            {
-                if (path.Contains(".git"))
-                {
-                    continue;
-                }
-
-                string relativePath = path[(cachePath.Length + 1)..];
-                string destinationPath = Path.Combine(targetPath, relativePath);
-
-                if (!Directory.Exists(targetPath))
-                    Directory.CreateDirectory(targetPath);
-
-                File.Copy(path, destinationPath, true); // Overwrite if file already exists in the destination
-                Logger.Instance.Info($"Copied {path} to {destinationPath}");
-            }
             Logger.Instance.Info($"Package {identifier} installed successfully!");
             return cachePath.Split(Path.DirectorySeparatorChar).LastOrDefault();
         }

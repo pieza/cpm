@@ -3,12 +3,18 @@ using cpm;
 using cpm.CLI;
 using cpm.CLI.Handlers;
 using cpm.Utils;
+using NLog;
+using NLog.Config;
 
 class Program
 {
     static int Main(string[] args)
     {
         CreateDefaultAppsettings();
+        CreateDefaultLogSettings();
+
+        LoggingConfiguration config = new XmlLoggingConfiguration(Path.Combine(Config.CPMDir, "nlog.config"));
+        LogManager.Configuration = config;
 
         ParserResult<object> result = Parser.Default.ParseArguments<InstallVerb, UninstallVerb, InitVerb, RunVerb>(args);
 
@@ -27,17 +33,26 @@ class Program
             }
         );
 
+        LogManager.Shutdown();
+
         return exitCode;
     }
 
-    static int CreateDefaultAppsettings()
+    static void CreateDefaultAppsettings()
     {
         if (!Directory.Exists(Config.CPMDir))
             Directory.CreateDirectory(Config.CPMDir);
 
         if (!File.Exists(Path.Combine(Config.CPMDir, "cpmsettings.json")))
             File.WriteAllText(Path.Combine(Config.CPMDir, "cpmsettings.json"), DefaultFiles.CPMSettings);
+    }
 
-        return 0;
+    static void CreateDefaultLogSettings()
+    {
+        if (!Directory.Exists(Config.CPMDir))
+            Directory.CreateDirectory(Config.CPMDir);
+
+        if (!File.Exists(Path.Combine(Config.CPMDir, "nlog.config")))
+            File.WriteAllText(Path.Combine(Config.CPMDir, "nlog.config"), DefaultFiles.NLogConfig);
     }
 }

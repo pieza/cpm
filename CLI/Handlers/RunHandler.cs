@@ -1,4 +1,5 @@
-﻿using cpm.Utils;
+﻿using cpm.Shell;
+using cpm.Utils;
 
 namespace cpm.CLI.Handlers
 {
@@ -18,8 +19,9 @@ namespace cpm.CLI.Handlers
 
             if (!scripts.TryGetValue(opts.Script, out string? command))
                 throw new Exception("Script not found.");
-            
 
+            new Command { Script = command }.Run();
+            
             return 0;
         }
 

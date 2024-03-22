@@ -57,8 +57,8 @@ namespace cpm.Utils
                 var targetTag = (version == "latest" ? GitUtils.GetLatestTag(tags) : tags.Where(t => t.Name == $"v{version}").FirstOrDefault()) ?? throw new Exception("Version not found");
 
                 string fullPath = Path.Combine(packagePath, targetTag.Name.Replace("v", ""));
-                
-                if(Directory.Exists(fullPath)) return new() { Path = fullPath, Identifier = identifier, Version = targetTag.Name.Replace("v", "") };
+
+                if (Directory.Exists(fullPath)) return new() { Path = fullPath, Identifier = identifier, Version = targetTag.Name.Replace("v", "") };
 
                 GitUtils.CloneRepository(package.Owner, package.Repo, fullPath, targetTag.Name);
                 return new() { Path = fullPath, Identifier = identifier, Version = targetTag.Name.Replace("v", "") };
@@ -67,6 +67,28 @@ namespace cpm.Utils
             {
                 Logger.Instance.Error(ex.Message);
                 return null;
+            }
+        }
+
+        public static void Copy(string from, string target)
+        {
+            string[] files = Directory.GetFileSystemEntries(from, "*", SearchOption.AllDirectories);
+
+            foreach (string path in files)
+            {
+                if (path.Contains(".git"))
+                {
+                    continue;
+                }
+
+                string relativePath = path[(from.Length + 1)..];
+                string destinationPath = Path.Combine(target, relativePath);
+
+                if (!Directory.Exists(target))
+                    Directory.CreateDirectory(target);
+
+                File.Copy(path, destinationPath, true); // Overwrite if file already exists in the destination
+                Logger.Instance.Info($"Copied {path} to {destinationPath}");
             }
         }
     }
