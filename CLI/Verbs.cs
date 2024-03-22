@@ -34,4 +34,12 @@ namespace cpm.CLI
         [Value(1, MetaName = "name", Required = false, HelpText = "Name of the project, if provided, will create a subdirectory.")]
         public string? ProjectName { get; set; }
     }
+
+    [Verb("run", true, [""], HelpText = "Runs a script from the include.yaml scripts section.")]
+    class RunVerb
+    {
+        [Value(1, MetaName = "script", Required = true, HelpText = "Script to run.")]
+        public required string Script { get; set; }
+
+    }
 }

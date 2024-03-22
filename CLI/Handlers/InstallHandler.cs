@@ -10,17 +10,15 @@ namespace cpm.CLI.Handlers
         {
             string version = !string.IsNullOrEmpty(opts.PackageVersion) ? opts.PackageVersion : "latest";
             Logger.Instance.Info($"Installing package {opts.PackageIdentifier} on version {version}...");
-            string currentDirectory = Directory.GetCurrentDirectory();
+            var includeYaml = new IncludeYaml();
 
-            if (!File.Exists(Path.Combine(currentDirectory, "include.yaml")))
+            if (!includeYaml.Exists)
             {
                 Logger.Instance.Error("include.yaml file not found.");
                 return 1;
             }
 
-            string includeYamlText = File.ReadAllText(Path.Combine(currentDirectory, "include.yaml"));
-            var includeYaml = YamlUtils.Deserialize(includeYamlText) ?? throw new Exception("Could not parse include.yaml");
-            Dictionary<string, string> dependencies = includeYaml?.Dependencies != null ? includeYaml.Dependencies : [];
+            Dictionary<string, string> dependencies = includeYaml?.Content.Dependencies != null ? includeYaml.Content.Dependencies : [];
             if (!string.IsNullOrEmpty(opts.PackageIdentifier))
             {
                 if (dependencies.ContainsKey(opts.PackageIdentifier) && !opts.IsForced)
@@ -34,9 +32,8 @@ namespace cpm.CLI.Handlers
                 if (includeYaml != null && !string.IsNullOrEmpty(installedVersion))
                 {
                     dependencies.Add(opts.PackageIdentifier, installedVersion);
-                    includeYaml.Dependencies = dependencies;
-                    var text = YamlUtils.Serialize(includeYaml);
-                    File.WriteAllText(Path.Combine(currentDirectory, "include.yaml"), text);
+                    includeYaml.Content.Dependencies = dependencies;
+                    includeYaml.Save();
                 }
             }
             else

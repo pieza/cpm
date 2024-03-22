@@ -1,5 +1,5 @@
 ﻿using cpm.Utils;
- 
+
 namespace cpm.CLI.Handlers
 {
     class InitHandler : IVerbHandler<InitVerb>
@@ -45,7 +45,12 @@ namespace cpm.CLI.Handlers
             var includesYaml = new IncludeYamlSchema()
             {
                 Name = projectName,
-                Version = "1.0.0"
+                Version = "1.0.0",
+                Scripts = new Dictionary<string, string>
+                {
+                    { "start", "make run" },
+                    { "build", "make" }
+                }
             };
 
             var content = YamlUtils.Serialize(includesYaml);
@@ -54,52 +59,18 @@ namespace cpm.CLI.Handlers
 
         private void CreateMakefile(string projectName, string directory)
         {
-            var content = $"""
-            CC = gcc
-            CFLAGS = -Wall -I./.include
-            BUILD_DIR = build
-
-            {projectName}: $(BUILD_DIR)/main.o
-            {"\t"}$(CC) $(CFLAGS) -o $(BUILD_DIR)/{projectName} $(BUILD_DIR)/main.o
-
-            $(BUILD_DIR)/main.o: main.c | $(BUILD_DIR)
-            {"\t"}$(CC) $(CFLAGS) -c main.c -o $(BUILD_DIR)/main.o
-
-            run: {projectName}
-            {"\t"}./$(BUILD_DIR)/{projectName}
-
-            $(BUILD_DIR):
-            {"\t"}mkdir -p $(BUILD_DIR)
-
-            clean:
-            {"\t"}rm -rf $(BUILD_DIR)
-            """;
-
+            var content = DefaultFiles.BuildMakefile(projectName);
             File.WriteAllText(Path.Combine(directory, "Makefile"), content);
         }
 
         private void CreateHelloWorld(string directory)
         {
-            var content = """
-            #include <stdio.h>
-
-            int main() {
-                printf("Hello World!\n");
-                return 0;
-            }
-            """;
-
-            File.WriteAllText(Path.Combine(directory, "main.c"), content);
+            File.WriteAllText(Path.Combine(directory, "main.c"), DefaultFiles.HelloWorld);
         }
 
         private void CreateGitignore(string directory)
         {
-            var content = """
-            .include/
-            build/
-            """;
-
-            File.WriteAllText(Path.Combine(directory, ".gitignore"), content);
+            File.WriteAllText(Path.Combine(directory, ".gitignore"), DefaultFiles.Gitignore);
         }
     }
 }

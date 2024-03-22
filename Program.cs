@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using cpm;
 using cpm.CLI;
 using cpm.CLI.Handlers;
 using cpm.Utils;
@@ -9,12 +10,13 @@ class Program
     {
         CreateDefaultAppsettings();
 
-        ParserResult<object> result = Parser.Default.ParseArguments<InstallVerb, UninstallVerb, InitVerb>(args);
+        ParserResult<object> result = Parser.Default.ParseArguments<InstallVerb, UninstallVerb, InitVerb, RunVerb>(args);
 
         int exitCode = result.MapResult(
             (InstallVerb installVerb) => new InstallHandler().Handle(installVerb),
             (UninstallVerb uninstallVerb) => new UninstallHandler().Handle(uninstallVerb),
             (InitVerb initVerb) => new InitHandler().Handle(initVerb),
+            (RunVerb runVerb) => new    RunHandler().Handle(runVerb),
             (IEnumerable<Error> errors) =>
             {
                 foreach (var error in errors)
@@ -34,12 +36,8 @@ class Program
             Directory.CreateDirectory(Config.CPMDir);
 
         if (!File.Exists(Path.Combine(Config.CPMDir, "cpmsettings.json")))
-            File.WriteAllText(Path.Combine(Config.CPMDir, "cpmsettings.json"), """
-            {
-              "RepositoryUrl": "http://localhost:5001/api",
-              "CachePath": "cache"
-            }
-            """);
+            File.WriteAllText(Path.Combine(Config.CPMDir, "cpmsettings.json"), DefaultFiles.CPMSettings);
+
         return 0;
     }
 }
