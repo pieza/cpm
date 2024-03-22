@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "cpm": {
+      "commandName": "Project",
+      "commandLineArgs": "install\r\n@fileutils",
+      "workingDirectory": "C:\\Users\\Jose Ulloa\\Documents\\Projects\\testcpm"
+    }
+  }
+}
