@@ -103,7 +103,7 @@ fi
 unzip -q "$INSTALL_DIR/$ASSET_NAME.zip" -d "$INSTALL_DIR"
 rm -f "$INSTALL_DIR/$ASSET_NAME.zip"
 
-if [ ! -d "$INSTALL_DIR/$ASSET_NAME" ]; then
+if [ ! -d "$INSTALL_DIR/$APP_NAME" ]; then
     echo "Error: Failed to extract $ASSET_NAME."
     exit 1
 fi
