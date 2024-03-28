@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        platform: [win-x64, win-x86, win-arm64, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64]
+
+    steps:
+      - name: Get release version
+        run: echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Publish
+        run: dotnet publish -c Release -o publish -r ${{ matrix.platform }}
+
+      - name: Compress directory
+        run: zip -r cpm-${{ env.RELEASE_TAG }}-${{ matrix.platform }}.zip publish
+        
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BUILD_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: cpm-${{ env.RELEASE_TAG }}-${{ matrix.platform }}.zip
+          asset_name: cpm-${{ env.RELEASE_TAG }}-${{ matrix.platform }}
+          asset_content_type: application/zip
