@@ -31,7 +31,9 @@ jobs:
         run: dotnet publish -c Release -o publish -r ${{ matrix.platform }}
 
       - name: Compress directory
-        run: zip -r cpm-${{ env.RELEASE_TAG }}-${{ matrix.platform }}.zip publish
+        run: |
+          cd publish
+          zip -r ../cpm-${{ env.RELEASE_TAG }}-${{ matrix.platform }}.zip .
         
       - name: Upload release asset
         uses: actions/upload-release-asset@v1

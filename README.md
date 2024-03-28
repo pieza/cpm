@@ -7,5 +7,5 @@
 You can download & install **`cpm`** by using the `install.sh` script:
 
 ```bash
-curl -qL https://github.com/pieza/cpm/install.sh | sh
+curl -qL https://raw.githubusercontent.com/pieza/cpm/main/install.sh | sh
 ```
