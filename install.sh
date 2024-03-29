@@ -17,6 +17,7 @@ if [ "x$0" = "xsh" ]; then
 fi
 
 DEPENDENCIES="curl unzip"
+DOTNET_VERSION="8.0.3"
 BASE_URL="https://api.github.com/repos/pieza/cpm"
 APP_NAME="cpm"
 INSTALL_DIR="$HOME/.$APP_NAME/bin"
@@ -29,6 +30,20 @@ for dep in $DEPENDENCIES; do
         exit 1
     fi
 done
+
+if command -v dotnet &>/dev/null; then
+    INSTALLED_DOTNET_VERSION=$(dotnet --version | cut -d. -f1)
+    if [[ "$INSTALLED_DOTNET_VERSION" == "$DOTNET_VERSION" ]]; then
+        echo ".NET runtime version $DOTNET_VERSION is already installed."
+    else
+        echo "Error: .NET runtime version $DOTNET_VERSION is not installed or the installed version does not match."
+        curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version $DOTNET_VERSION
+        export PATH="$PATH:$HOME/.dotnet"
+    fi
+fi
+
+# Install .NET runtime
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version $DOTNET_VERSION
 
 mkdir -p "$INSTALL_DIR"
 
@@ -108,6 +123,9 @@ if [ ! -f "$INSTALL_DIR/$APP_NAME" ]; then
     exit 1
 fi
 
-ln -s "$INSTALL_DIR/$APP_NAME" "/usr/local/bin/$APP_NAME"
+export PATH="$PATH:$HOME/.cpm"
 
 echo "¡$APP_NAME successfully installed!"
+echo "make sure to update your shell configuration path to add the executable to the PATH"
+echo "export PATH=\"$PATH:$HOME/.dotnet\""
+echo "export PATH=\"$PATH:$HOME/.cpm\""
