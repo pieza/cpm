@@ -19,7 +19,7 @@ fi
 DEPENDENCIES="curl unzip"
 BASE_URL="https://api.github.com/repos/pieza/cpm"
 APP_NAME="cpm"
-INSTALL_DIR="$HOME/$APP_NAME/bin"
+INSTALL_DIR="$HOME/.$APP_NAME/bin"
 PLATFORM=$(uname | tr '[:upper:]' '[:lower:]')
 ARCHITECTURE=$(uname -m)
 
@@ -103,7 +103,7 @@ fi
 unzip -q "$INSTALL_DIR/$ASSET_NAME.zip" -d "$INSTALL_DIR"
 rm -f "$INSTALL_DIR/$ASSET_NAME.zip"
 
-if [ ! -d "$INSTALL_DIR/$APP_NAME" ]; then
+if [ ! -f "$INSTALL_DIR/$APP_NAME" ]; then
     echo "Error: Failed to extract $ASSET_NAME."
     exit 1
 fi
