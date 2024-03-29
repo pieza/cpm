@@ -28,7 +28,7 @@ jobs:
         run: dotnet build -c Release
 
       - name: Publish
-        run: dotnet publish -c Release -o publish -r ${{ matrix.platform }}
+        run: dotnet publish -c Release -o publish -r ${{ matrix.platform }} --self-contained
 
       - name: Compress directory
         run: |
