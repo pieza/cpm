@@ -109,8 +109,8 @@ if [ ! -f "$INSTALL_DIR/$APP_NAME" ]; then
     exit 1
 fi
 
-export PATH="$PATH:$HOME/.cpm"
+export PATH="$PATH:$HOME/.cpm/bin"
 
 echo "¡$APP_NAME successfully installed!"
 echo "make sure to update your shell configuration path to add the executable to the PATH"
-echo "export PATH=\"$PATH:$HOME/.cpm\""
+echo "export PATH=\"\$PATH:\$HOME/.cpm/bin\""
