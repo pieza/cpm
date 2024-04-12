@@ -4,7 +4,7 @@
     {
         public static string CPMSettings = """"
         {
-          "RepositoryUrl": "http://165.227.207.127:5001/api",
+          "RepositoryUrl": "https://cpmapi.zeabur.app/api",
           "CachePath": "cache"
         }
         """";
