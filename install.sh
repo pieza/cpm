@@ -89,6 +89,8 @@ esac;
 RELEASE_ID=$(curl -s "$BASE_URL/releases/tags/$RELEASE_TAG" | grep -o '"id": [0-9]*' | awk '{print $2}' | head -n 1)
 DOWNLOAD_URL=$(curl -s "$BASE_URL/releases/$RELEASE_ID/assets" | grep -o '"browser_download_url": "[^"]*"' | grep "$ASSET_NAME" | awk -F ': ' '{print $2}' | tr -d '"')
 
+rm -rf "$HOME/.$APP_NAME"
+
 if [ -z "$DOWNLOAD_URL" ]; then
     echo "Error: Asset $ASSET_NAME not found in release $RELEASE_TAG."
     exit 1
