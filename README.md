@@ -1,7 +1,3 @@
-Aquí tienes una versión mejorada del README:
-
----
-
 # C Package Manager
 
 ![Build](https://github.com/pieza/cpm/actions/workflows/release.yml/badge.svg)
